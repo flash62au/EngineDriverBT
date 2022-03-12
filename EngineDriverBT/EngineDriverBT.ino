@@ -117,7 +117,7 @@ void rotary_onButtonClick() {
 void rotary_loop() {
   //dont print anything unless value changed
   if (rotaryEncoder.encoderChanged()) {
-    MediaKeyReport c;
+    char c;
     encoderValue = rotaryEncoder.readEncoder();
     if (abs(encoderValue-lastEncoderValue) > 700) { // must have passed through zero
       Serial.print("Encoder Value: ");
@@ -132,9 +132,9 @@ void rotary_loop() {
       }
     }
     if (encoderValue > lastEncoderValue) {
-      c = KEY_MEDIA_VOLUME_DOWN;
+      c = KEY_PAGE_DOWN;
     } else {
-      c = KEY_MEDIA_VOLUME_UP;
+      c = KEY_PAGE_UP;
     }
     bleKeyboard.press(c);
     delay(20);
