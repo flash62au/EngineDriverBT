@@ -117,7 +117,7 @@ void rotary_onButtonClick() {
 void rotary_loop() {
   //dont print anything unless value changed
   if (rotaryEncoder.encoderChanged()) {
-    char c;
+    MediaKeyReport c;
     encoderValue = rotaryEncoder.readEncoder();
     if (abs(encoderValue-lastEncoderValue) > 700) { // must have passed through zero
       Serial.print("Encoder Value: ");
