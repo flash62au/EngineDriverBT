@@ -135,7 +135,7 @@ void rotary_loop() {
       c = KEY_PAGE_DOWN;
     } else {
       c = KEY_PAGE_UP;
-    }
+    } 
     bleKeyboard.press(c);
     delay(20);
     bleKeyboard.release(c);
