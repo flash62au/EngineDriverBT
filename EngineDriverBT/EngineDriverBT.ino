@@ -117,7 +117,7 @@ void rotary_onButtonClick() {
 void rotary_loop() {
   //dont print anything unless value changed
   if (rotaryEncoder.encoderChanged()) {
-    char c;
+//    char c;
     encoderValue = rotaryEncoder.readEncoder();
     if (abs(encoderValue-lastEncoderValue) > 700) { // must have passed through zero
       Serial.print("Encoder Value: ");
@@ -132,13 +132,15 @@ void rotary_loop() {
       }
     }
     if (encoderValue > lastEncoderValue) {
-      c = KEY_PAGE_DOWN;
+//      c = KEY_PAGE_DOWN;
+        bleKeyboard.write(KEY_MEDIA_VOLUME_DOWN);
     } else {
-      c = KEY_PAGE_UP;
+//      c = KEY_PAGE_UP;
+        bleKeyboard.write(KEY_MEDIA_VOLUME_UP);
     } 
-    bleKeyboard.press(c);
-    delay(20);
-    bleKeyboard.release(c);
+//    bleKeyboard.press(c);
+//    delay(20);
+//    bleKeyboard.release(c);
     Serial.print("New Encoder Value: ");
     Serial.print(encoderValue);
     Serial.print(" Last Encoder Value: ");
