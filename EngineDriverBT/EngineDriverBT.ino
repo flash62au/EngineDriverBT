@@ -4,22 +4,36 @@
  */
 #define BOUNCE_WITH_PROMPT_DETECTION    // Make button state changes available immediately
 
+#include <Keypad.h> // https://www.arduinolibraries.info/libraries/keypad
 #include <BleKeyboard.h>          // https://github.com/T-vK/ESP32-BLE-Keyboard
-#include <Bounce2.h>              // https://github.com/thomasfredericks/Bounce2
 #include <AiEsp32RotaryEncoder.h> // https://github.com/igorantolic/ai-esp32-rotary-encoder
+// un-comment if you wish to use discrete buttons
+//#include <Bounce2.h>              // https://github.com/thomasfredericks/Bounce2
 
 BleKeyboard bleKeyboard("EngineDriver BT", "DIY", 100); ;
-
 int noButtons = 13;
 
-#define DEBOUNCE_TIME 50 // the debounce time in millisecond, increase this time if it still chatters
-Bounce debouncers[13];
+#define ROW_NUM     4 // four rows
+#define COLUMN_NUM  4 // four columns
+char keys[ROW_NUM][COLUMN_NUM] = {
+  {KEY_F1, KEY_F2, KEY_F3, KEY_UP_ARROW},
+  {KEY_F4, KEY_F5, KEY_F6, KEY_DOWN_ARROW},
+  {KEY_F7, KEY_F8, KEY_F9, KEY_LEFT_ARROW},
+  {KEY_F11, KEY_F10, KEY_F12, KEY_RIGHT_ARROW}
+};
 
-//                           0     1     2     3     4     5     6     7     8     9     10    11    12
-boolean buttonIsPressed[] = {false,false,false,false,false,false,false,false,false,false,false,false,false};
-//char buttonChar[] =         {'0',  '1',  '2',  '3',  '4',  '5',  '6',  '7',  '8',  '=',  '-',  '[',  ']'};
-char buttonChar[] =         {KEY_F1,KEY_F2,KEY_F3,KEY_F4,KEY_F5,KEY_F6,KEY_F7,KEY_F8,KEY_F9,KEY_UP_ARROW,KEY_DOWN_ARROW,KEY_LEFT_ARROW,KEY_RIGHT_ARROW};
-byte buttonPins[] =         { 2,   4,    5,    15,   16,   17,   18,   19,   21,   22,   23,   12,   13};
+byte pin_rows[ROW_NUM]      = {19, 18, 5, 17}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
+byte pin_column[COLUMN_NUM] = {16, 4, 0, 2};   // GIOP16, GIOP4, GIOP0, GIOP2 connect to the column pins
+
+Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+
+// un-comment and alter if you wish to use discrete buttons
+//#define DEBOUNCE_TIME 50 // the debounce time in millisecond, increase this time if it still chatters
+//Bounce debouncers[13];
+// //                           0     1     2     3     4     5     6     7     8     9     10    11    12
+//boolean buttonIsPressed[] = {false,false,false,false,false,false,false,false,false,false,false,false,false};
+//char buttonChar[] =         {KEY_F1,KEY_F2,KEY_F3,KEY_F4,KEY_F5,KEY_F6,KEY_F7,KEY_F8,KEY_F9,KEY_UP_ARROW,KEY_DOWN_ARROW,KEY_LEFT_ARROW,KEY_RIGHT_ARROW};
+//byte buttonPins[] =         { 2,   4,    5,    15,   16,   17,   18,   19,   21,   22,   23,   12,   13};
 
 #define ROTARY_ENCODER_A_PIN 32
 #define ROTARY_ENCODER_B_PIN 25
@@ -45,13 +59,15 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
   bleKeyboard.begin();
-  
-  for (byte currentPinIndex = 0 ; currentPinIndex < noButtons ; currentPinIndex++) {
-    pinMode(buttonPins[currentPinIndex], INPUT_PULLUP);
-    debouncers[currentPinIndex] = Bounce();
-    debouncers[currentPinIndex].attach(buttonPins[currentPinIndex]);      // After setting up the button, setup the Bounce instance :
-    debouncers[currentPinIndex].interval(5);        
-  }
+  keypad.addEventListener(keypadEvent); // Add an event listener for this keypad
+
+// uncomment if you wish to use discrete buttons
+//  for (byte currentPinIndex = 0 ; currentPinIndex < noButtons ; currentPinIndex++) {
+//    pinMode(buttonPins[currentPinIndex], INPUT_PULLUP);
+//    debouncers[currentPinIndex] = Bounce();
+//    debouncers[currentPinIndex].attach(buttonPins[currentPinIndex]);      // After setting up the button, setup the Bounce instance :
+//    debouncers[currentPinIndex].interval(5);        
+//  }
 
   //we must initialize rotary encoder
   rotaryEncoder.begin();
@@ -60,43 +76,36 @@ void setup() {
   //in this example we will set possible values between 0 and 1000;
   rotaryEncoder.setBoundaries(0, 1000, circleValues); //minValue, maxValue, circleValues true|false (when max go to min and vice versa)
 
-  /*Rotary acceleration introduced 25.2.2021.
-   * in case range to select is huge, for example - select a value between 0 and 1000 and we want 785
-   * without accelerateion you need long time to get to that number
-   * Using acceleration, faster you turn, faster will the value raise.
-   * For fine tuning slow down.
-   */
   //rotaryEncoder.disableAcceleration(); //acceleration is now enabled by default - disable if you dont need it
   rotaryEncoder.setAcceleration(250); //or set the value - larger number = more accelearation; 0 or 1 means disabled acceleration
 }
 
 void loop() {
   if(bleKeyboard.isConnected()) {
+    char key = keypad.getKey();
 
-    for (byte currentIndex = 0 ; currentIndex < noButtons ; currentIndex++) {
-      debouncers[currentIndex].update();
-      if (debouncers[currentIndex].fell()) {
-        bleKeyboard.press(buttonChar[currentIndex]);
-//        Serial.print("Button ");
-//        Serial.print(buttonChar[currentIndex]);
-//        Serial.println(" pushed.");
-      }
-      else if (debouncers[currentIndex].rose()) {
-        bleKeyboard.release(buttonChar[currentIndex]);
-//        Serial.print("Button ");
-//        Serial.print(buttonChar[currentIndex]);
-//        Serial.println(" released.");
-      }
-    } 
+// uncomment if you wish to use discrete buttons
+//    for (byte currentIndex = 0 ; currentIndex < noButtons ; currentIndex++) {
+//      debouncers[currentIndex].update();
+//      if (debouncers[currentIndex].fell()) {
+//        bleKeyboard.press(buttonChar[currentIndex]);
+// //        Serial.print("Button ");
+// //        Serial.print(buttonChar[currentIndex]);
+// //        Serial.println(" pushed.");
+//      }
+//      else if (debouncers[currentIndex].rose()) {
+//        bleKeyboard.release(buttonChar[currentIndex]);
+// //        Serial.print("Button ");
+// //        Serial.print(buttonChar[currentIndex]);
+// //        Serial.println(" released.");
+//      }
+//    } 
 
     rotary_loop();
-    
     delay(100);
   }
 }
 
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
 // ----------------------------------------------------------------
 
 void rotary_onButtonClick() {
@@ -153,4 +162,25 @@ void rotary_loop() {
   if (rotaryEncoder.isEncoderButtonClicked()) {
     rotary_onButtonClick();
   }
+}
+
+// ----------------------------------------------------------------
+
+void keypadEvent(KeypadEvent key){
+    switch (keypad.getState()){
+    case PRESSED:
+        bleKeyboard.press(key);
+         Serial.print("Button ");
+         Serial.print(key);
+         Serial.println(" pushed.");
+        break;
+    case RELEASED:
+        bleKeyboard.release(key);
+         Serial.print("Button ");
+         Serial.print(key);
+         Serial.println(" released.");
+        break;
+//    case HOLD:
+//        break;
+    }
 }
