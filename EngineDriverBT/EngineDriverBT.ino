@@ -165,7 +165,6 @@ void rotary_loop() {
 }
 
 // ----------------------------------------------------------------
-
 void keypadEvent(KeypadEvent key){
     switch (keypad.getState()){
     case PRESSED:
