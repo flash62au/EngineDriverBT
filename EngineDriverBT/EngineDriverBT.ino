@@ -1,6 +1,6 @@
 /**
  * This app turns the ESP32 into a Bluetooth LE keyboard that is intended to act as a dedicated
- * gamepad for the JMRI Engine Drive Throttle (Engine Driver) Android app.
+ * gamepad for the JMRI Engine Driver Throttle (Engine Driver) Android app.
  */
 #define BOUNCE_WITH_PROMPT_DETECTION    // Make button state changes available immediately
 
@@ -11,7 +11,6 @@
 //#include <Bounce2.h>              // https://github.com/thomasfredericks/Bounce2
 
 BleKeyboard bleKeyboard("EngineDriver BT", "DIY", 100); ;
-int noButtons = 13;
 
 #define ROW_NUM     4 // four rows
 #define COLUMN_NUM  4 // four columns
@@ -28,6 +27,7 @@ byte pin_column[COLUMN_NUM] = {16, 4, 0, 2};   // GIOP16, GIOP4, GIOP0, GIOP2 co
 Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
 
 // un-comment and alter if you wish to use discrete buttons
+//int noButtons = 13;
 //#define DEBOUNCE_TIME 50 // the debounce time in millisecond, increase this time if it still chatters
 //Bounce debouncers[13];
 // //                           0     1     2     3     4     5     6     7     8     9     10    11    12
