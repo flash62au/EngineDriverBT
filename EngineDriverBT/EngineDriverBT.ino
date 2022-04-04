@@ -12,17 +12,27 @@
 
 BleKeyboard bleKeyboard("EngineDriver BT", "DIY", 100); ;
 
-#define ROW_NUM     4 // four rows
-#define COLUMN_NUM  4 // four columns
-char keys[ROW_NUM][COLUMN_NUM] = {
-  {KEY_F1, KEY_F2, KEY_F3, KEY_UP_ARROW},
-  {KEY_F4, KEY_F5, KEY_F6, KEY_DOWN_ARROW},
-  {KEY_F7, KEY_F8, KEY_F9, KEY_LEFT_ARROW},
-  {KEY_F11, KEY_F10, KEY_F12, KEY_RIGHT_ARROW}
-};
+//#define ROW_NUM     4 // four rows
+//#define COLUMN_NUM  4 // four columns
+//char keys[ROW_NUM][COLUMN_NUM] = {
+//  {KEY_F1, KEY_F2, KEY_F3, KEY_UP_ARROW},
+//  {KEY_F4, KEY_F5, KEY_F6, KEY_DOWN_ARROW},
+//  {KEY_F7, KEY_F8, KEY_F9, KEY_LEFT_ARROW},
+//  {KEY_F11, KEY_F10, KEY_F12, KEY_RIGHT_ARROW}
+//};
+//byte pin_rows[ROW_NUM]      = {19, 18, 5, 17}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
+//byte pin_column[COLUMN_NUM] = {16, 4, 0, 2};   // GIOP16, GIOP4, GIOP0, GIOP2 connect to the column pins
 
-byte pin_rows[ROW_NUM]      = {19, 18, 5, 17}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
-byte pin_column[COLUMN_NUM] = {16, 4, 0, 2};   // GIOP16, GIOP4, GIOP0, GIOP2 connect to the column pins
+#define ROW_NUM     4 // four rows
+#define COLUMN_NUM  3 // four columns
+char keys[ROW_NUM][COLUMN_NUM] = {
+  {KEY_F1, KEY_F2, KEY_F3},
+  {KEY_F4, KEY_F5, KEY_F6},
+  {KEY_F7, KEY_F8, KEY_F9},
+  {KEY_F11, KEY_F10, KEY_F12}
+};
+byte pin_rows[ROW_NUM]      = {19, 18, 17, 16}; // GIOP19, GIOP18, GIOP5, GIOP17 connect to the row pins
+byte pin_column[COLUMN_NUM] = { 4, 0, 2};   // GIOP16, GIOP4, GIOP0 connect to the column pins
 
 Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
 
@@ -35,9 +45,9 @@ Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_
 //char buttonChar[] =         {KEY_F1,KEY_F2,KEY_F3,KEY_F4,KEY_F5,KEY_F6,KEY_F7,KEY_F8,KEY_F9,KEY_UP_ARROW,KEY_DOWN_ARROW,KEY_LEFT_ARROW,KEY_RIGHT_ARROW};
 //byte buttonPins[] =         { 2,   4,    5,    15,   16,   17,   18,   19,   21,   22,   23,   12,   13};
 
-#define ROTARY_ENCODER_A_PIN 32
-#define ROTARY_ENCODER_B_PIN 25
-#define ROTARY_ENCODER_BUTTON_PIN 26
+#define ROTARY_ENCODER_A_PIN 12
+#define ROTARY_ENCODER_B_PIN 14
+#define ROTARY_ENCODER_BUTTON_PIN 13
 #define ROTARY_ENCODER_VCC_PIN -1 /* 27 put -1 of Rotary encoder Vcc is connected directly to 3,3V; else you can use declared output pin for powering rotary encoder */
 
 //depending on your encoder - try 1,2 or 4 to get expected behaviour
